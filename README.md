@@ -4,17 +4,22 @@ Private music streaming for a closed group. The machines that carry the audio ho
 
 **Measured, and rerunnable from this repository: I dropped 115 shares from an encoded 195 s track and rebuilt it byte for byte.**
 
-| Test | Result | Rerun here? |
-| --- | --- | --- |
-| Encode a 195 s track, drop 25% of shares | 17/17 windows rebuilt, file identical | Yes: `examples/repair_a_track.py` |
-| Test suite | 162 tests pass | Yes: `pytest` |
-| Relay drops 25% of shares in flight | 17/17 windows, 113 of 398 shares lost | No, full deployment |
-| One relay killed mid-play | 17/17 answered, 6 through failover | No, full deployment |
-| Published track read after 24 h | 244 blocks, 16/16 windows, 0 stalls | No, full deployment |
-| Cold storage node, before it settles | 5/17 windows answered | No, full deployment |
-| Same node after 8 connected peers | 17/17 windows answered | No, full deployment |
+Reproducible in this repository:
 
-The rows marked no came from the full system, whose deployment scripts are not published. The last column exists so that no reader has to guess which numbers they can check.
+| Run this | Result |
+| --- | --- |
+| `python examples/repair_a_track.py` | 17/17 windows rebuilt after 115 shares dropped, file identical |
+| `cd relay && python -m pytest tests -q` | 162 tests pass |
+
+Reported from the full deployment. These came from the full system, whose deployment scripts are not published:
+
+| Test | Result |
+| --- | --- |
+| Relay drops 25% of shares in flight | 17/17 windows, 113 of 398 shares lost |
+| One relay killed mid-play | 17/17 answered, 6 through failover |
+| Published track read after 24 h | 244 blocks, 16/16 windows, 0 stalls |
+| Cold storage node, before it settles | 5/17 windows answered |
+| Same node after 8 connected peers | 17/17 windows answered |
 
 ## What I built
 
@@ -34,7 +39,7 @@ The client holds the keys and does the decryption. In the full system that clien
 
 A self-hosted music server answers the same need and fails the privacy goal. Its host sees every listener's address, every request, and every track, so one subpoena or one curious administrator exposes the whole circle. Its uptime is also the product's uptime.
 
-Blindstream moves the storage off the owner and the knowledge off the relays. The owner uploads once and can then go offline, because replay reads from the network. The relay sees a hash and returns bytes. Neither one learns what the other knows, which is the property I set out to build.
+Blindstream moves the storage off the owner and the knowledge off the relays. The owner uploads once and can then go offline, because replay reads from the network. The relay sees a hash and returns bytes, and it never learns which owner published that hash.
 
 ## Try it
 
@@ -90,7 +95,7 @@ cd relay && python -m pytest tests -q
 - **Per-object overhead is high.** A 195 s track becomes several thousand 32 KiB objects. The encoding exists to make that tail cheap, not to hide it.
 - **A copyable stream is copyable.** A client allowed to play a track can record what it decrypts. The design protects the owner and the relationship, not the bytes after delivery.
 - **No central recovery.** Keys live with the member. A lost device means the member re-enrols with their owner.
-- **The relay side is not the whole claim.** An internet provider still sees that a member uses an anonymising transport, and an observer who watches both ends of a connection is out of scope. Removing a single central observer is the goal, not anonymity against everyone.
+- **The relay side is not the whole claim.** An internet provider still sees that a member uses an anonymising transport, and an observer who watches both ends of a connection is out of scope. The design removes the central observer. It does not remove all observation.
 
 ## Status
 
