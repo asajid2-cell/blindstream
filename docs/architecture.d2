@@ -1,0 +1,54 @@
+# Blindstream architecture.
+#
+# Rendered with D2 v0.9.0:
+#   d2 docs/architecture.d2 docs/architecture.svg
+#   d2 --pad 24 docs/architecture.d2 docs/architecture.png
+#
+# The diagram is generated from this file, not drawn by hand. Edit the source,
+# re-render, commit both. Layout is deterministic for a given D2 version.
+
+direction: right
+
+classes: {
+  party: {
+    style: {
+      fill: "#ffffff"
+      stroke: "#1f2933"
+      stroke-width: 2
+      border-radius: 10
+      font-size: 16
+    }
+  }
+  store: {style: {fill: "#e8eef5"; stroke: "#1f2933"; stroke-width: 2; font-size: 16}}
+  relay: {style: {fill: "#fdf2f8"; stroke: "#86198f"; stroke-width: 2; font-size: 16}}
+  publish: {style: {stroke: "#0f766e"; stroke-width: 3}}
+  play: {style: {stroke: "#86198f"; stroke-width: 3}}
+  enrol: {style: {stroke: "#9aa5b1"; stroke-width: 2; stroke-dash: 6}}
+}
+
+owner: "Owner server\none member's machine\nseals, splits, encodes\npublishes once,\nthen may go offline" {
+  class: party
+  near: top-left
+}
+
+substrate: "Substrate\ncontent-addressed storage\nany k of n rebuild a window" {
+  class: store
+  shape: cylinder
+  near: top-center
+}
+
+relay: "Blind relay\nin: a content hash\nout: 32 KiB ciphertext\nholds no map\nkeeps no log" {
+  class: relay
+  shape: hexagon
+  near: top-right
+}
+
+client: "Client\niPhone app\nholds the keys\nrebuilds and verifies\nlocally" {
+  class: party
+  near: bottom-right
+}
+
+owner -> substrate {class: publish}
+relay -> substrate {class: play}
+client -> relay {class: play}
+owner -> client {class: enrol}

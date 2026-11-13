@@ -2,6 +2,10 @@
 
 Private music streaming for a closed group. The machines that carry the audio hold no map from a hash to a track or an owner, and keep no log of what they served.
 
+![Architecture: an owner server publishes once to content-addressed storage; a client reads through a blind relay that holds no map and keeps no log.](docs/architecture.svg)
+
+*Green is publish, once. Magenta is replay, which never reaches the owner. Grey dashed is enrolment. The diagram is generated from [docs/architecture.d2](docs/architecture.d2) with D2, so it stays in step with the design.*
+
 **Measured, and rerunnable from this repository: I dropped 115 shares from an encoded 195 s track and rebuilt it byte for byte.**
 
 Reproducible in this repository:
@@ -85,6 +89,7 @@ cd relay && python -m pytest tests -q
 | `relay/blind_substrate.py` | Pooled network reads and the no-retry miss classification |
 | `relay/blind_library_index.py` | Catalogue index the owner signs and a client opens without the owner online |
 | `relay/tests/` | 162 tests, including the no-logging proof |
+| `docs/architecture.d2` | The diagram's source; re-render with `d2 docs/architecture.d2 docs/architecture.svg` |
 | `docs/architecture.md` | Parties, flows, and the one design decision behind them |
 | `docs/measurements.md` | Each result above with its caveats |
 
